@@ -111,7 +111,7 @@ def encrypt():
     encrypted_file = io.BytesIO(encrypted_data)
     encrypted_file.seek(0)
 
-    return send_file(encrypted_file, as_attachment=True, download_name='encrypted_image.jpg', mimetype='image/jpeg')
+    return send_file(encrypted_file, as_attachment=True, attachment_filename='encrypted_image.jpg', mimetype='image/jpeg')
 
 @app.route('/decrypt', methods=['POST'])
 def decrypt():
@@ -131,7 +131,7 @@ def decrypt():
     decrypted_file = io.BytesIO(decrypted_data)
     decrypted_file.seek(0)
 
-    return send_file(decrypted_file, as_attachment=True, download_name='decrypted_image.jpg', mimetype='image/jpeg')
+    return send_file(decrypted_file, as_attachment=True, attachment_filename='decrypted_image.jpg', mimetype='image/jpeg')
 
 if __name__ == '__main__':
     app.run(debug=True)
