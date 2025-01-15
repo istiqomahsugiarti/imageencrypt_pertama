@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Image Encryption and Decryption</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+      /* Reset default margin and padding */
+      body, h1, h2, form {
+        margin: 0;
+        padding: 0;
+      }
+
+      /* Set background color and font family */
+      body {
+        background-color: #F8F8FF;
+        font-family: 'Poppins', sans-serif;
+        color: #333;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+      }
+
+      /* Style the container */
+      .container {
+        background-color: #FFF;
+        padding: 40px;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        max-width: 600px;
+        width: 100%;
+      }
+
+      /* Style the forms */
+      form {
+        margin-bottom: 30px;
+        padding: 30px;
+        border-radius: 5px;
+        background-color: #F5F5F5;
+      }
+
+      /* Style the input and button */
+      input[type="file"], button {
+        padding: 12px 20px;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+      }
+
+      input[type="file"] {
+        background-color: #E0E0E0;
+      }
+
+      button {
+        background-color: #9370DB;
+        color: #FFF;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      button:hover {
+        background-color: #8A2BE2;
+      }
+
+      /* Additional styles */
+      h1, h2 {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      h1 {
+        font-size: 36px;
+        color: #9370DB;
+      }
+
+      h2 {
+        font-size: 24px;
+        color: #7B68EE;
+      }
+
+      /* Drop zone styles */
+      .drop-zone {
+        border: 2px dashed #9370DB;
+        border-radius: 5px;
+        padding: 20px;
+        text-align: center;
+        font-size: 16px;
+        color: #9370DB;
+        margin-bottom: 20px;
+        position: relative;
+      }
+
+      .drop-zone input[type="file"] {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+      }
+
+      .drop-zone.hover {
+        background-color: #F5F5F5;
+      }
+
+      /* Title styles */
+      .title {
+        text-align: center;
+        font-size: 48px;
+        color: #7B68EE;
+        margin-bottom: 40px;
+      }
+
+      /* Preview styles */
+      .image-preview, .file-preview {
+        max-width: 100%;
+        margin: 20px 0;
+        display: none;
+        text-align: center;
+      }
+
+      .image-preview img {
+        max-width: 100%;
+        max-height: 300px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .preview-text {
+        margin-top: 10px;
+        color: #666;
+        font-size: 14px;
+        padding: 10px;
+        background-color: #fff;
+        border-radius: 5px;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
+      }
+
+      /* File info styles */
+      .file-info {
+        display: inline-flex;
+        align-items: center;
+        padding: 8px 16px;
+        background-color: #fff;
+        border-radius: 5px;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
+      }
+
+      .file-icon {
+        margin-right: 10px;
+        color: #9370DB;
+        font-size: 24px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 class="title">Image Encryption &amp; Decryption</h1>
+    <div class="container">
+      <form action="/encrypt" method="post" enctype="multipart/form-data">
+        <h2>Encrypt Image</h2>
+        <div class="drop-zone">
+          Drop your image here or click to select
+          <input type="file" name="image" accept="image/*" required>
+        </div>
+        <div class="image-preview">
+          <img src="" alt="Preview">
+          <div class="preview-text"></div>
+        </div>
+        <button type="submit">Encrypt</button>
+      </form>
+      <form action="/decrypt" method="post" enctype="multipart/form-data">
+        <h2>Decrypt Image</h2>
+        <div class="drop-zone">
+          Drop your file here or click to select
+          <input type="file" name="file" required>
+        </div>
+        <div class="file-preview">
+          <div class="preview-text">
+            <div class="file-info">
+              <span class="file-icon">📄</span>
+              <span class="file-details"></span>
+            </div>
+          </div>
+        </div>
+        <button type="submit">Decrypt</button>
+      </form>
+    </div>
+    <script>
+      const dropZones = document.querySelectorAll('.drop-zone');
+      
+      dropZones.forEach(dropZone => {
+        const input = dropZone.querySelector('input[type="file"]');
+        const form = dropZone.closest('form');
+        const preview = form.querySelector('.image-preview, .file-preview');
+        const previewImage = preview.querySelector('img');
+        const previewText = preview.querySelector('.preview-text');
+        const fileDetails = preview.querySelector('.file-details');
+
+        function formatFileSize(bytes) {
+          if (bytes < 1024) return bytes + ' bytes';
+          else if (bytes < 1048576) return (bytes / 1024).toFixed(2) + ' KB';
+          else return (bytes / 1048576).toFixed(2) + ' MB';
+        }
+
+        function handleFile(file) {
+          if (!file) {
+            preview.style.display = 'none';
+            return;
+          }
+
+          preview.style.display = 'block';
+          const fileSize = formatFileSize(file.size);
+          
+          if (file.type.startsWith('image/') && previewImage) {
+            // Handle image preview for encryption
+            const reader = new FileReader();
+            reader.onload = function(e) {
+              previewImage.src = e.target.result;
+              previewText.textContent = `File name: ${file.name} | Size: ${fileSize}`;
+            }
+            reader.readAsDataURL(file);
+          } else {
+            // Handle file info for decryption
+            if (fileDetails) {
+              fileDetails.textContent = `${file.name} | ${fileSize}`;
+            }
+          }
+        }
+
+        dropZone.addEventListener('dragover', e => {
+          e.preventDefault();
+          dropZone.classList.add('hover');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+          dropZone.classList.remove('hover');
+        });
+
+        dropZone.addEventListener('drop', e => {
+          e.preventDefault();
+          dropZone.classList.remove('hover');
+          const file = e.dataTransfer.files[0];
+          input.files = e.dataTransfer.files;
+          handleFile(file);
+        });
+
+        input.addEventListener('change', () => {
+          const file = input.files[0];
+          handleFile(file);
+        });
+      });
+    </script>
+  </body>
+</html>
