@@ -2,95 +2,95 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Image Encryption and Decryption</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-      /* Reset default margin and padding */
-      body, h1, h2, form {
+      * {
         margin: 0;
         padding: 0;
+        box-sizing: border-box;
       }
 
-      /* Set background color and font family */
       body {
-        background-color: #F8F8FF;
-        font-family: 'Poppins', sans-serif;
-        color: #333;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: center;
+        background: linear-gradient(135deg, #f6f8fd 0%, #f1f4f9 100%);
+        font-family: 'Inter', sans-serif;
+        color: #2d3748;
         min-height: 100vh;
-        margin: 0;
-      }
-
-      /* Style the container */
-      .container {
-        background-color: #FFF;
-        padding: 40px;
-        border-radius: 10px;
-        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-        max-width: 600px;
-        width: 100%;
-      }
-
-      /* Style the forms */
-      form {
-        margin-bottom: 30px;
-        padding: 30px;
-        border-radius: 5px;
-        background-color: #F5F5F5;
-      }
-
-      /* Style the input and button */
-      input[type="file"], button {
-        padding: 12px 20px;
-        border: none;
-        border-radius: 5px;
-        font-size: 16px;
-      }
-
-      input[type="file"] {
-        background-color: #E0E0E0;
-      }
-
-      button {
-        background-color: #9370DB;
-        color: #FFF;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-      }
-
-      button:hover {
-        background-color: #8A2BE2;
-      }
-
-      /* Additional styles */
-      h1, h2 {
-        text-align: center;
-        margin-bottom: 20px;
-      }
-
-      h1 {
-        font-size: 36px;
-        color: #9370DB;
-      }
-
-      h2 {
-        font-size: 24px;
-        color: #7B68EE;
-      }
-
-      /* Drop zone styles */
-      .drop-zone {
-        border: 2px dashed #9370DB;
-        border-radius: 5px;
         padding: 20px;
+      }
+
+      .app-container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .title {
         text-align: center;
-        font-size: 16px;
-        color: #9370DB;
+        font-size: clamp(24px, 5vw, 36px);
+        color: #2d3748;
+        margin-bottom: 40px;
+        font-weight: 600;
+      }
+
+      .title span {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .cards-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+        padding: 20px;
+      }
+
+      .card {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s ease;
+      }
+
+      .card:hover {
+        transform: translateY(-5px);
+      }
+
+      .card h2 {
+        font-size: 24px;
         margin-bottom: 20px;
+        color: #4a5568;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .card h2 svg {
+        width: 24px;
+        height: 24px;
+      }
+
+      .drop-zone {
+        border: 2px dashed #e2e8f0;
+        border-radius: 15px;
+        padding: 30px 20px;
+        text-align: center;
+        transition: all 0.3s ease;
+        background: #f8fafc;
         position: relative;
+        cursor: pointer;
+      }
+
+      .drop-zone:hover {
+        border-color: #667eea;
+        background: #f1f5f9;
+      }
+
+      .drop-zone.hover {
+        border-color: #667eea;
+        background: #f1f5f9;
       }
 
       .drop-zone input[type="file"] {
@@ -103,131 +103,198 @@
         cursor: pointer;
       }
 
-      .drop-zone.hover {
-        background-color: #F5F5F5;
+      .upload-icon {
+        width: 50px;
+        height: 50px;
+        margin-bottom: 15px;
+        color: #667eea;
       }
 
-      /* Title styles */
-      .title {
-        text-align: center;
-        font-size: 48px;
-        color: #7B68EE;
-        margin-bottom: 40px;
+      .drop-text {
+        color: #64748b;
+        margin-bottom: 10px;
+        font-size: 14px;
       }
 
-      /* Preview styles */
-      .image-preview, .file-preview {
-        max-width: 100%;
-        margin: 20px 0;
+      .preview-container {
+        margin-top: 20px;
         display: none;
-        text-align: center;
+      }
+
+      .image-preview {
+        width: 100%;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 15px;
       }
 
       .image-preview img {
-        max-width: 100%;
+        width: 100%;
+        height: auto;
         max-height: 300px;
-        border-radius: 5px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        object-fit: contain;
+        border-radius: 10px;
       }
 
-      .preview-text {
-        margin-top: 10px;
-        color: #666;
-        font-size: 14px;
-        padding: 10px;
-        background-color: #fff;
-        border-radius: 5px;
-        box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
-      }
-
-      /* File info styles */
       .file-info {
-        display: inline-flex;
+        background: #f8fafc;
+        padding: 15px;
+        border-radius: 10px;
+        font-size: 14px;
+        color: #4a5568;
+        display: flex;
         align-items: center;
-        padding: 8px 16px;
-        background-color: #fff;
-        border-radius: 5px;
-        box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
+        gap: 10px;
       }
 
       .file-icon {
-        margin-right: 10px;
-        color: #9370DB;
-        font-size: 24px;
+        color: #667eea;
+        font-size: 20px;
+      }
+
+      button {
+        width: 100%;
+        padding: 15px;
+        border: none;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        font-size: 16px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 20px;
+      }
+
+      button:hover {
+        opacity: 0.9;
+        transform: translateY(-2px);
+      }
+
+      @media (max-width: 768px) {
+        .cards-container {
+          grid-template-columns: 1fr;
+          padding: 10px;
+        }
+
+        .card {
+          padding: 20px;
+        }
+
+        .title {
+          margin-bottom: 20px;
+        }
       }
     </style>
   </head>
   <body>
-    <h1 class="title">Image Encryption &amp; Decryption</h1>
-    <div class="container">
-      <form action="/encrypt" method="post" enctype="multipart/form-data">
-        <h2>Encrypt Image</h2>
-        <div class="drop-zone">
-          Drop your image here or click to select
-          <input type="file" name="image" accept="image/*" required>
-        </div>
-        <div class="image-preview">
-          <img src="" alt="Preview">
-          <div class="preview-text"></div>
-        </div>
-        <button type="submit">Encrypt</button>
-      </form>
-      <form action="/decrypt" method="post" enctype="multipart/form-data">
-        <h2>Decrypt Image</h2>
-        <div class="drop-zone">
-          Drop your file here or click to select
-          <input type="file" name="file" required>
-        </div>
-        <div class="file-preview">
-          <div class="preview-text">
-            <div class="file-info">
-              <span class="file-icon">📄</span>
-              <span class="file-details"></span>
+    <div class="app-container">
+      <h1 class="title">
+        <span>Secure</span> Image Encryption
+      </h1>
+      
+      <div class="cards-container">
+        <!-- Encrypt Card -->
+        <div class="card">
+          <h2>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+            Encrypt Image
+          </h2>
+          <form action="/encrypt" method="post" enctype="multipart/form-data">
+            <div class="drop-zone">
+              <svg class="upload-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+              <p class="drop-text">Drag & drop your image here or click to browse</p>
+              <input type="file" name="image" accept="image/*" required>
             </div>
-          </div>
+            
+            <div class="preview-container">
+              <div class="image-preview">
+                <img src="" alt="Preview">
+              </div>
+              <div class="file-info">
+                <span class="file-icon">📄</span>
+                <span class="file-details"></span>
+              </div>
+            </div>
+            
+            <button type="submit">Encrypt Image</button>
+          </form>
         </div>
-        <button type="submit">Decrypt</button>
-      </form>
+
+        <!-- Decrypt Card -->
+        <div class="card">
+          <h2>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+            Decrypt Image
+          </h2>
+          <form action="/decrypt" method="post" enctype="multipart/form-data">
+            <div class="drop-zone">
+              <svg class="upload-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+              <p class="drop-text">Drag & drop encrypted file here or click to browse</p>
+              <input type="file" name="file" required>
+            </div>
+            
+            <div class="preview-container">
+              <div class="file-info">
+                <span class="file-icon">🔒</span>
+                <span class="file-details"></span>
+              </div>
+            </div>
+            
+            <button type="submit">Decrypt File</button>
+          </form>
+        </div>
+      </div>
     </div>
+
     <script>
       const dropZones = document.querySelectorAll('.drop-zone');
       
       dropZones.forEach(dropZone => {
-        const input = dropZone.querySelector('input[type="file"]');
         const form = dropZone.closest('form');
-        const preview = form.querySelector('.image-preview, .file-preview');
-        const previewImage = preview.querySelector('img');
-        const previewText = preview.querySelector('.preview-text');
-        const fileDetails = preview.querySelector('.file-details');
-
+        const input = dropZone.querySelector('input[type="file"]');
+        const previewContainer = form.querySelector('.preview-container');
+        const previewImage = form.querySelector('.image-preview img');
+        const fileDetails = form.querySelector('.file-details');
+        
         function formatFileSize(bytes) {
           if (bytes < 1024) return bytes + ' bytes';
-          else if (bytes < 1048576) return (bytes / 1024).toFixed(2) + ' KB';
-          else return (bytes / 1048576).toFixed(2) + ' MB';
+          else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+          else return (bytes / 1048576).toFixed(1) + ' MB';
         }
 
         function handleFile(file) {
           if (!file) {
-            preview.style.display = 'none';
+            previewContainer.style.display = 'none';
             return;
           }
 
-          preview.style.display = 'block';
+          previewContainer.style.display = 'block';
           const fileSize = formatFileSize(file.size);
           
           if (file.type.startsWith('image/') && previewImage) {
-            // Handle image preview for encryption
             const reader = new FileReader();
             reader.onload = function(e) {
               previewImage.src = e.target.result;
-              previewText.textContent = `File name: ${file.name} | Size: ${fileSize}`;
+              fileDetails.textContent = `${file.name} (${fileSize})`;
             }
             reader.readAsDataURL(file);
           } else {
-            // Handle file info for decryption
-            if (fileDetails) {
-              fileDetails.textContent = `${file.name} | ${fileSize}`;
-            }
+            fileDetails.textContent = `${file.name} (${fileSize})`;
           }
         }
 
